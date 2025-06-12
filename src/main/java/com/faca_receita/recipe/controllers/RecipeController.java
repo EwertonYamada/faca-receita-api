@@ -30,4 +30,5 @@ public class RecipeController {
     public ResponseEntity<List<RecipeListResponseDTO>> search(@RequestBody SearchRecipeDTO dto) {
         return ResponseEntity.ok(this.recipeService.search(dto));
     }
+
 }
