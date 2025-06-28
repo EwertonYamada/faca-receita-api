@@ -1,15 +1,16 @@
 package com.faca_receita.recipe.models;
 
 import com.faca_receita.helpers.generalEnums.MeasureUnit;
+import com.faca_receita.helpers.generalEnums.ProductCategory;
 import com.faca_receita.ingredients.models.Ingredient;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
 
 @Entity
-@Getter
+@Data
 public class Recipe {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "global_seq")
@@ -20,7 +21,8 @@ public class Recipe {
     private String name;
 
     @Column(name = "category")
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private ProductCategory category;
 
     @Column(name = "yield_type")
     @Enumerated(EnumType.STRING)
