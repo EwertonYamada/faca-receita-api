@@ -23,12 +23,11 @@ public class RecipeController {
 
     @PostMapping
     public ResponseEntity<Recipe> save(@RequestBody Recipe recipe) {
-        return ResponseEntity.ok(this.recipeService.save(recipe));
+        return ResponseEntity.ok(recipeService.save(recipe));
     }
 
     @PostMapping("/search")
     public ResponseEntity<List<RecipeListResponseDTO>> search(@RequestBody SearchRecipeDTO dto) {
         return ResponseEntity.ok(this.recipeService.search(dto));
     }
-
 }
