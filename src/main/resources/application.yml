@@ -26,3 +26,6 @@ logging:
       springframework: INFO
     com:
       faca_receita: DEBUG
+
+jwt:
+  secret: O18IsyskWGYWW7DEnJKS9IN48fZCUYtDS8ccMVFPkmQ=
