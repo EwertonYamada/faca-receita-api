@@ -9,4 +9,4 @@ public enum ProductCategory {
     SAVORY_PIE,
     SWEET,
     SWEET_PIE,
-    }
+}
