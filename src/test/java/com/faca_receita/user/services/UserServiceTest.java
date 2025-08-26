@@ -47,7 +47,7 @@ class UserServiceTest {
         when(userRepository.save(any(User.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        CreateUserResponseDTO response = userService.createUser(dto);
+        CreateUserResponseDTO response = userService.registerUser(dto);
 
         verify(userRepository, times(1)).save(any(User.class));
         assertEquals(dto.getEmail(), response.getEmail());
@@ -60,7 +60,7 @@ class UserServiceTest {
                 .thenReturn(true);
 
         RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> userService.createUser(dto));
+                () -> userService.registerUser(dto));
 
         assertEquals("There is already a user with the document or email provided",
                 exception.getMessage());

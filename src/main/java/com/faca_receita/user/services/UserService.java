@@ -5,11 +5,17 @@ import com.faca_receita.user.dtos.CreateUserResponseDTO;
 import com.faca_receita.user.helpers.mappers.UserMapper;
 import com.faca_receita.user.models.User;
 import com.faca_receita.user.repositories.UserRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -21,7 +27,8 @@ public class UserService {
         this.emailService = emailService;
     }
 
-    public CreateUserResponseDTO createUser(CreateUserDTO createUserDTO) {
+    @Transactional
+    public CreateUserResponseDTO registerUser(CreateUserDTO createUserDTO) {
         this.validations(createUserDTO);
         User user = UserMapper.toEntity(createUserDTO, passwordEncoder);
         this.userRepository.save(user);
@@ -47,5 +54,16 @@ public class UserService {
         user.setEmailVerified(true);
         user.setVerificationToken(null);
         this.userRepository.save(user);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return new org.springframework.security.core.userdetails.User(
+                user.getEmail(),
+                user.getPasswordHash(),
+                List.of()
+        );
     }
 }

@@ -15,7 +15,7 @@ public class EmailService {
 
     public void sendConfirmationEmail(String to, String token) {
         String subject = "Confirmação de cadastro";
-        String confirmationURL =  "http://localhost:8080/api/user/confirm?token=" + token;
+        String confirmationURL =  "http://localhost:8080/api/auth/confirm?token=" + token;
         String message = "Bem-vindo ao Faça Receita! Clique no link para confirmar seu cadastro:\n" + confirmationURL;
 
         SimpleMailMessage email = new SimpleMailMessage();

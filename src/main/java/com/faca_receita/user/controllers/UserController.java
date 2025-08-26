@@ -1,10 +1,6 @@
 package com.faca_receita.user.controllers;
 
-import com.faca_receita.user.dtos.CreateUserDTO;
-import com.faca_receita.user.dtos.CreateUserResponseDTO;
 import com.faca_receita.user.services.UserService;
-import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,16 +11,5 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
-    }
-
-    @PostMapping("/new")
-    public ResponseEntity<CreateUserResponseDTO> newUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
-        return ResponseEntity.ok(this.userService.createUser(createUserDTO));
-    }
-
-    @GetMapping("/confirm")
-    public ResponseEntity<String> confirmUser(@RequestParam("token") String token) {
-        this.userService.confirmUser(token);
-        return ResponseEntity.ok("Conta confirmada com sucesso!");
     }
 }

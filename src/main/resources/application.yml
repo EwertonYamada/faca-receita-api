@@ -20,14 +20,19 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${MAIL_USERNAME}
+    username: ${MAIL_USER}
     password: ${MAIL_PASSWORD}
+    protocol: smtp
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+            required: true
+          ssl:
+            enable: false
+          trust: smtp.gmail.com
 
 server:
   port: 8080
@@ -40,4 +45,4 @@ logging:
       faca_receita: DEBUG
 
 jwt:
-  secret: O18IsyskWGYWW7DEnJKS9IN48fZCUYtDS8ccMVFPkmQ=
+  secret: ${JWT_SECRET}

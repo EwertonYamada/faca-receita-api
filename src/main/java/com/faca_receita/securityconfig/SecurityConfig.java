@@ -1,5 +1,6 @@
 package com.faca_receita.securityconfig;
 
+import com.faca_receita.user.services.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,11 +24,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+    public AuthenticationManager authenticationManager(HttpSecurity http, UserService userService) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)
-                // Configure aqui o seu UserDetailsService e PasswordEncoder, ex:
-                //.userDetailsService(userDetailsService)
-                //.passwordEncoder(passwordEncoder())
+                .userDetailsService(userService)
+                .passwordEncoder(passwordEncoder()) // BCrypt ou outro
+                .and()
                 .build();
     }
 
@@ -35,10 +36,11 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
-                )
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .anyRequest().authenticated()
+                );
 
         return http.build();
     }
