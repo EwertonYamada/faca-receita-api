@@ -3,9 +3,9 @@ spring:
     name: faca-receita
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/faca_receita_db
+    url: jdbc:postgresql://localhost:5436/facareceita
     username: facareceita
-    password: $facareceita$
+    password: facareceita
     driver-class-name: org.postgresql.Driver
 
   jpa:

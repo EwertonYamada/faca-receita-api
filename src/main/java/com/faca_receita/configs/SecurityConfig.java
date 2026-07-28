@@ -1,4 +1,4 @@
-package com.faca_receita.corsconfig;
+package com.faca_receita.configs;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
