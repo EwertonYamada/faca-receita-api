@@ -1,6 +1,9 @@
 package com.faca_receita.auth.services;
 
 import com.faca_receita.auth.dtos.AuthDTO;
+import com.faca_receita.user.dtos.CreateUserDTO;
+import com.faca_receita.user.dtos.CreateUserResponseDTO;
+import com.faca_receita.user.services.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -16,17 +19,19 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Component
-public class JWTService {
+public class AuthService {
 
     private final SecretKey secretKey;
     private final AuthenticationManager authenticationManager;
+    private final UserService userService;
 
-    public JWTService(
+    public AuthService(
             @Value("${jwt.secret}") String secret,
-            AuthenticationManager authenticationManager
+            AuthenticationManager authenticationManager, UserService userService
     ) {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.authenticationManager = authenticationManager;
+        this.userService = userService;
     }
 
     public AuthDTO.AuthResponse getToken(AuthDTO.AuthRequest authRequest) {
@@ -40,18 +45,19 @@ public class JWTService {
     private String generateToken(UserDetails user) {
         return Jwts.builder()
                 .setSubject(user.getUsername())
+                .claim("roles", user.getAuthorities().stream()
+                        .map(a -> a.getAuthority()).toList())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public String extractUsername(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+    public CreateUserResponseDTO registerUser(CreateUserDTO createUserDTO) {
+        return this.userService.registerUser(createUserDTO);
+    }
+
+    public void confirmUser(String token) {
+        this.userService.confirmUser(token);
     }
 }
