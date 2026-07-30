@@ -1,10 +1,13 @@
-package com.faca_receita.corsconfig;
+package com.faca_receita.securityconfig;
 
+import com.faca_receita.user.services.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -16,11 +19,16 @@ import java.util.List;
 public class SecurityConfig {
 
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(HttpSecurity http, UserService userService) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)
-                // Configure aqui o seu UserDetailsService e PasswordEncoder, ex:
-                //.userDetailsService(userDetailsService)
-                //.passwordEncoder(passwordEncoder())
+                .userDetailsService(userService)
+                .passwordEncoder(passwordEncoder()) // BCrypt ou outro
+                .and()
                 .build();
     }
 
@@ -28,10 +36,11 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
-                )
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .anyRequest().authenticated()
+                );
 
         return http.build();
     }
