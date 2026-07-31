@@ -13,16 +13,11 @@ public class EmailService {
         this.mailSender = mailSender;
     }
 
-    public void sendConfirmationEmail(String to, String token) {
-        String subject = "Confirmação de cadastro";
-        String confirmationURL =  "http://localhost:8080/api/auth/confirm?token=" + token;
-        String message = "Bem-vindo ao Faça Receita! Clique no link para confirmar seu cadastro:\n" + confirmationURL;
-
+    public void sendAuthEmail(String subject, String to, String message) {
         SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(to);
         email.setSubject(subject);
         email.setText(message);
-
         this.mailSender.send(email);
     }
 }

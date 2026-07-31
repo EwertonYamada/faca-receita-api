@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class UserMapper {
-    public static User toEntity(CreateUserDTO userDTO, PasswordEncoder encoder) {
+    public static User toEntity(CreateUserDTO userDTO, String hashPassword) {
         User user = new User();
         user.setDocument(userDTO.getDoc());
         user.setEmail(userDTO.getEmail());
@@ -18,8 +18,7 @@ public class UserMapper {
         user.setEmailVerified(false);
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
-        user.setVerificationToken(UUID.randomUUID().toString());
-        user.setPasswordHash(encoder.encode(userDTO.getPassword()));
+        user.setPasswordHash(hashPassword);
         return user;
     }
 
