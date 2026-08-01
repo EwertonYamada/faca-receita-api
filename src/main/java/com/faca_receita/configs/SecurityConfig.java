@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:src/main/java/com/faca_receita/configs/SecurityConfig.java
 package com.faca_receita.configs;
-========
-package com.faca_receita.securityconfig;
->>>>>>>> master:src/main/java/com/faca_receita/securityconfig/SecurityConfig.java
 
 import com.faca_receita.user.services.UserService;
 import org.springframework.context.annotation.Bean;
