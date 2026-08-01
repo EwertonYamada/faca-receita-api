@@ -1,5 +1,6 @@
 package com.faca_receita.user.services;
 
+import com.faca_receita.auth.services.AuthService;
 import com.faca_receita.user.dtos.CreateUserDTO;
 import com.faca_receita.user.dtos.CreateUserResponseDTO;
 import com.faca_receita.user.models.User;
@@ -23,7 +24,7 @@ class UserServiceTest {
     private PasswordEncoder passwordEncoder;
 
     @InjectMocks
-    private UserService userService;
+    private AuthService authService;
 
     private CreateUserDTO dto;
 
@@ -47,7 +48,7 @@ class UserServiceTest {
         when(userRepository.save(any(User.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        CreateUserResponseDTO response = userService.registerUser(dto);
+        CreateUserResponseDTO response = authService.registerUser(dto);
 
         verify(userRepository, times(1)).save(any(User.class));
         assertEquals(dto.getEmail(), response.getEmail());
@@ -60,7 +61,7 @@ class UserServiceTest {
                 .thenReturn(true);
 
         RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> userService.registerUser(dto));
+                () -> authService.registerUser(dto));
 
         assertEquals("There is already a user with the document or email provided",
                 exception.getMessage());
