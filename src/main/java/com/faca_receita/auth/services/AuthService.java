@@ -51,12 +51,19 @@ public class AuthService {
     }
 
     public AuthDTO.AuthResponse getToken(AuthDTO.AuthRequest authRequest) {
+        String email = authRequest.email();
+        String password = authRequest.password();
+        this.validateIfEmailExists(email);
         this.validateAccountConfirmation(authRequest);
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequest.email(), authRequest.password())
+                new UsernamePasswordAuthenticationToken(email, password)
         );
         UserDetails user = (UserDetails) authentication.getPrincipal();
         return new AuthDTO.AuthResponse(this.generateToken(user));
+    }
+
+    private void validateIfEmailExists(String email) {
+        this.userService.findByEmail(email);
     }
 
     private void validateAccountConfirmation(AuthDTO.AuthRequest authRequest) {
