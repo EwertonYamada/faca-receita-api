@@ -2,7 +2,7 @@ package com.faca_receita.company.dtos;
 
 import java.time.LocalDateTime;
 
-public record CreateCompanyResponse(
+public record CompanyResponse(
         Long id,
         Long userId,
         String legalName,
