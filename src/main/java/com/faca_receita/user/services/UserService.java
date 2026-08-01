@@ -1,5 +1,7 @@
 package com.faca_receita.user.services;
 
+import com.faca_receita.auth.models.UserToken;
+import com.faca_receita.auth.services.AuthService;
 import com.faca_receita.user.dtos.CreateUserDTO;
 import com.faca_receita.user.dtos.CreateUserResponseDTO;
 import com.faca_receita.user.helpers.mappers.UserMapper;
@@ -18,52 +20,52 @@ import java.util.List;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final EmailService emailService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.emailService = emailService;
+
     }
 
-    @Transactional
-    public CreateUserResponseDTO registerUser(CreateUserDTO createUserDTO) {
-        this.validations(createUserDTO);
-        User user = UserMapper.toEntity(createUserDTO, passwordEncoder);
-        this.userRepository.save(user);
-        this.emailService.sendConfirmationEmail(user.getEmail(), user.getVerificationToken());
-        return UserMapper.toResponse(user);
-    }
-
-    private void validations(CreateUserDTO createUserDTO) {
+    public void validations(CreateUserDTO createUserDTO) {
         this.validateIfUserAlreadyExists(createUserDTO);
+        this.validateIfPasswordAndConfirmationMatch(createUserDTO.getPassword(), createUserDTO.getPasswordConfirmation());
     }
 
     private void validateIfUserAlreadyExists(CreateUserDTO createUserDTO) {
         Boolean userAlreadyExists = this.userRepository.existingUserByDocumentOrEmail(createUserDTO.getEmail(), createUserDTO.getDoc());
         if (userAlreadyExists) {
-            throw new IllegalStateException("There is already a user with the document or email provided");
+            throw new IllegalStateException("Já existe um usuário com os dados informados!");
         }
     }
 
-    public void confirmUser(String token) {
-        User user = this.userRepository.findByVerificationToken(token)
-                .orElseThrow(() -> new RuntimeException("Invalid verification token"));
-
-        user.setEmailVerified(true);
-        user.setVerificationToken(null);
-        this.userRepository.save(user);
+    public void validateIfPasswordAndConfirmationMatch(String password, String passwordConfirmation) {
+        if (!password.equals(passwordConfirmation)) {
+            throw new IllegalArgumentException("Senha e confirmação de senha não coincidem!");
+        }
     }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = this.findByEmail(email);
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPasswordHash(),
                 List.of()
         );
+    }
+
+    public User findByEmail(String email) {
+        return this.userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado!"));
+    }
+
+    public void save(User user) {
+        this.userRepository.save(user);
+    }
+
+    public void validateAccountConfirmation(String email) {
+        Boolean confirmed = this.userRepository.isAccountConfirmation(email);
+        if (!confirmed) {
+            throw new IllegalStateException("Conta não confirmada! Verifique o seu e-mail.");
+        }
     }
 }

@@ -32,9 +32,6 @@ public class User {
     @Column(name = " emailVerified")
     private Boolean emailVerified = false;
 
-    @Column(name = "verificationToken")
-    private String verificationToken;
-
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
