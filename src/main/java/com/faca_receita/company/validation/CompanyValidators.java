@@ -1,6 +1,6 @@
 package com.faca_receita.company.validation;
 
-import com.faca_receita.company.dtos.CreateCompanyRequest;
+import com.faca_receita.company.dtos.CompanyRequest;
 import com.faca_receita.company.repositories.CompanyRepository;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +13,7 @@ public class CompanyValidators {
         this.companyRepository = companyRepository;
     }
 
-    public void validate(CreateCompanyRequest companyRequest) {
+    public void validate(CompanyRequest companyRequest) {
 //        if (this.companyRepository.existsByUserId(companyRequest.userId())) throw new RuntimeException("Usuário já possui empresa cadastrada");
 //        if (companyRequest.cnpj() != null && this.companyRepository.existsByCnpj(companyRequest.cnpj())) throw new RuntimeException("CNPJ já cadastrado.");
     }

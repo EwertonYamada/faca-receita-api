@@ -1,5 +1,6 @@
 package com.faca_receita.company.models;
 
+import com.faca_receita.user.models.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,8 +17,9 @@ public class Company {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "user_id")
-    private Long userId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "legal_name")
     private String legalName;
