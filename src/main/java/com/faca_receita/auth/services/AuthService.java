@@ -30,24 +30,28 @@ import java.util.Date;
 @Component
 public class AuthService {
 
-    private final SecretKey secretKey;
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
     private final UserTokenRepository userTokenRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
 
     public AuthService(
-            @Value("${jwt.secret}") String secret,
-            AuthenticationManager authenticationManager, UserService userService, UserTokenRepository userTokenRepository, EmailService emailService, PasswordEncoder passwordEncoder
+            AuthenticationManager authenticationManager,
+            UserService userService,
+            UserTokenRepository userTokenRepository,
+            EmailService emailService,
+            PasswordEncoder passwordEncoder,
+            JwtService jwtService
     ) {
-        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.userTokenRepository = userTokenRepository;
         this.emailService = emailService;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     public AuthDTO.AuthResponse getToken(AuthDTO.AuthRequest authRequest) {
@@ -59,7 +63,7 @@ public class AuthService {
                 new UsernamePasswordAuthenticationToken(email, password)
         );
         UserDetails user = (UserDetails) authentication.getPrincipal();
-        return new AuthDTO.AuthResponse(this.generateToken(user));
+        return new AuthDTO.AuthResponse(this.jwtService.generateToken(user));
     }
 
     private void validateIfEmailExists(String email) {
@@ -68,17 +72,6 @@ public class AuthService {
 
     private void validateAccountConfirmation(AuthDTO.AuthRequest authRequest) {
         this.userService.validateAccountConfirmation(authRequest.email());
-    }
-
-    private String generateToken(UserDetails user) {
-        return Jwts.builder()
-                .setSubject(user.getUsername())
-                .claim("roles", user.getAuthorities().stream()
-                        .map(a -> a.getAuthority()).toList())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
-                .signWith(secretKey, SignatureAlgorithm.HS256)
-                .compact();
     }
 
     public void save(UserToken token) {
