@@ -3,7 +3,7 @@ package com.faca_receita.company.dtos;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public record CreateCompanyRequest(
+public record CompanyRequest(
         @NotBlank(message = "Razão social é obrigatória")
         String legalName,
         String description,

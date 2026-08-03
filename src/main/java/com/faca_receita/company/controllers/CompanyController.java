@@ -1,7 +1,7 @@
 package com.faca_receita.company.controllers;
 
 import com.faca_receita.company.dtos.CompanyResponse;
-import com.faca_receita.company.dtos.CreateCompanyRequest;
+import com.faca_receita.company.dtos.CompanyRequest;
 import com.faca_receita.company.services.CompanyService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class CompanyController {
     private CompanyService companyService;
 
     @PostMapping
-    public ResponseEntity<CompanyResponse> create(@RequestBody @Valid CreateCompanyRequest company) {
+    public ResponseEntity<CompanyResponse> create(@RequestBody @Valid CompanyRequest company) {
         return ResponseEntity.status(HttpStatus.CREATED).body(this.companyService.create(company));
     }
 
@@ -27,7 +27,7 @@ public class CompanyController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CompanyResponse> update(@PathVariable Long id, @RequestBody CreateCompanyRequest company) {
+    public ResponseEntity<CompanyResponse> update(@PathVariable Long id, @RequestBody CompanyRequest company) {
         return ResponseEntity.ok(this.companyService.update(id, company));
     }
 }
